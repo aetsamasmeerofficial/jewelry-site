@@ -1,54 +1,74 @@
-// app/contact/page.tsx
-import Link from "next/link";
+// src/app/contact/page.tsx
+import type { Metadata } from "next";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Contact",
-  description: "Request to purchase or contact our team.",
+  description: `Contact ${SITE_NAME} to request a purchase or ask a question.`,
+  alternates: { canonical: `${SITE_URL}/contact` },
 };
 
-export default function ContactPage({
-  searchParams,
-}: {
-  searchParams?: { product?: string };
-}) {
-  const product = searchParams?.product ? decodeURIComponent(searchParams.product) : "";
+const faqs = [
+  {
+    question: "How do I purchase a piece?",
+    answer:
+      "Use the Request to Purchase button on a product page or contact us. We confirm availability, final price, and delivery details before payment.",
+  },
+  {
+    question: "Do you ship internationally?",
+    answer:
+      "Yes. Shipping options and timelines are confirmed during the request process.",
+  },
+  {
+    question: "Can I request customization?",
+    answer:
+      "Yes. Share your requirements and we will confirm feasibility, timeline, and pricing.",
+  },
+];
 
-  const whatsappNumber = "YOUR_NUMBER"; // e.g. 886XXXXXXXXX (no +)
-  const msg = product
-    ? `Hi, I want to request to purchase: ${product}. Please confirm price and delivery.`
-    : "Hi, I want to request to purchase. Please share details.";
-  const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-
+export default function ContactPage() {
   return (
-    <main className="space-y-6">
-      <h1 className="text-3xl font-semibold">Contact</h1>
+    <main className="mx-auto max-w-3xl px-6 py-12 space-y-10">
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Home", url: `${SITE_URL}/` },
+            { name: "Contact", url: `${SITE_URL}/contact` },
+          ]),
+          faqSchema(faqs),
+        ]}
+      />
 
-      {product && (
-        <div className="rounded-2xl border border-neutral-200 p-5">
-          <p className="text-sm text-neutral-700">
-            Product selected: <span className="font-medium">{product}</span>
-          </p>
-        </div>
-      )}
+      <header className="space-y-2">
+        <h1 className="text-4xl font-semibold tracking-tight">Contact</h1>
+        <p className="text-neutral-600">
+          Send your request — we reply with availability, final price, and delivery.
+        </p>
+      </header>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-neutral-200 p-5">
-          <h2 className="font-medium">WhatsApp</h2>
-          <p className="mt-2 text-sm text-neutral-600">
-            Fastest way. Send your request and we’ll confirm availability, final price and delivery.
-          </p>
-          <Link className="mt-3 inline-block underline" href={waLink} target="_blank">
-            Message on WhatsApp
-          </Link>
-        </div>
+      <section className="rounded-2xl border border-neutral-200 p-6 space-y-3">
+        <p className="text-sm text-neutral-700">
+          For now, this can be a simple email/WhatsApp flow. Later we’ll add a form.
+        </p>
+        <ul className="text-sm text-neutral-700 list-disc pl-5 space-y-1">
+          <li>Email: hello@yourdomain.com</li>
+          <li>WhatsApp: +886-000-000-000</li>
+        </ul>
+      </section>
 
-        <div className="rounded-2xl border border-neutral-200 p-5">
-          <h2 className="font-medium">Order Request Form</h2>
-          <p className="mt-2 text-sm text-neutral-600">
-            Next phase we’ll build a premium form that emails you + saves to a sheet.
-          </p>
+      <section className="rounded-2xl border border-neutral-200 p-6 space-y-4">
+        <h2 className="text-xl font-medium">FAQ</h2>
+        <div className="space-y-4">
+          {faqs.map((f) => (
+            <div key={f.question} className="space-y-1">
+              <p className="font-medium">{f.question}</p>
+              <p className="text-sm text-neutral-700">{f.answer}</p>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
     </main>
   );
 }

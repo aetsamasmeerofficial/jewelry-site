@@ -1,15 +1,30 @@
-// app/sitemap.ts
+// src/app/sitemap.ts
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/site";
 
-const SITE_URL = "https://example.com"; // replace later after domain
+const staticRoutes = ["/", "/collections", "/about", "/contact"];
+
+const productSlugs = [
+  "emerald-ring",
+  // add more later
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/collections", "/about", "/contact"].map((path) => ({
+  const now = new Date();
+
+  const staticEntries = staticRoutes.map((path) => ({
     url: `${SITE_URL}${path}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
-    priority: path === "" ? 1 : 0.7,
+    priority: path === "/" ? 1 : 0.7,
   }));
 
-  return routes;
+  const productEntries = productSlugs.map((slug) => ({
+    url: `${SITE_URL}/products/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  return [...staticEntries, ...productEntries];
 }

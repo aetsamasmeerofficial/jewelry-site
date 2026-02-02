@@ -1,11 +1,20 @@
-// app/layout.tsx
-import type { Metadata } from "next";
+// src/app/layout.tsx
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, OG_IMAGE } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationSchema } from "@/lib/schema";
 
-const SITE_NAME = "Your Jewelry Brand";
-const SITE_URL = "https://example.com"; // replace later after domain
-const SITE_DESCRIPTION =
-  "Premium jewelry crafted with meaning. Explore collections and request to purchase.";
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap", // font optimization
+});
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  colorScheme: "light",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -15,21 +24,29 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  alternates: { canonical: "/" },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     url: SITE_URL,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     siteName: SITE_NAME,
-    locale: "en_US",
-    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: SITE_NAME }],
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} preview`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
-    images: ["/og/default.png"],
+    images: [OG_IMAGE],
   },
   robots: {
     index: true,
@@ -42,16 +59,23 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className="min-h-dvh bg-white text-neutral-900">
-        <div className="mx-auto max-w-6xl px-4 py-6">{children}</div>
-      </body>
+      <head>
+        {/* Organization JSON-LD */}
+        <JsonLd data={organizationSchema()} />
+      </head>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
